@@ -1,0 +1,6 @@
+{
+  "appId": "com.cronicasdelumbral.rpg",
+  "appName": "Crónicas del Umbral",
+  "webDir": "www",
+  "server": { "androidScheme": "https" }
+}

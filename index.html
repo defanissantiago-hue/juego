@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#141a24" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Crónicas RPG" />
+  <meta name="description" content="RPG 2.5D de fantasía, exploración, combate y aventura. Prototipo 0.1 para móvil y PC." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" href="assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="src/style.css" />
+  <title>Crónicas del Umbral — RPG 0.1</title>
+</head>
+<body>
+  <canvas id="world" aria-label="Mundo tridimensional del videojuego"></canvas>
+  <div id="vignette"></div>
+  <div id="hud" class="hidden">
+    <div class="status-panel ornate">
+      <div class="portrait" id="hudPortrait">✦</div>
+      <div class="status-info">
+        <div class="status-name"><strong id="hudName">Aventurero</strong> <span id="hudLevel">Nv. 1</span></div>
+        <div class="meter health"><span id="healthFill" style="width:100%"></span><em id="healthText">100/100</em></div>
+        <div class="meter mana"><span id="manaFill" style="width:100%"></span><em id="manaText">60/60</em></div>
+        <div class="meter exp"><span id="xpFill" style="width:0%"></span></div>
+      </div>
+    </div>
+    <div class="top-right">
+      <div class="clock ornate"><span id="periodIcon">☀</span> <span id="clockText">09:00</span> <small id="areaText">Aldea del Alba</small></div>
+      <canvas id="minimap" width="160" height="160" title="Abrir mapa"></canvas>
+      <button id="pauseBtn" class="round small" title="Pausa">☰</button>
+    </div>
+    <div id="enemyBar" class="boss-bar hidden"><div id="enemyName"></div><div class="meter health"><span id="enemyFill"></span></div></div>
+    <div id="questBanner" class="quest-banner">✦ <span id="questText">Hablá con la anciana de la aldea</span></div>
+    <div id="toast" aria-live="polite"></div>
+    <div id="joystick" class="touch-control"><div id="stick"></div></div>
+    <div id="mobileButtons" class="touch-control">
+      <button class="control circle dodge" id="dodgeBtn" aria-label="Esquivar">↝</button>
+      <button class="control circle skill" id="skillBtn" aria-label="Habilidad especial">✧</button>
+      <button class="control circle interact" id="interactBtn" aria-label="Interactuar">✦</button>
+      <button class="control circle attack" id="attackBtn" aria-label="Atacar">⚔</button>
+    </div>
+    <div class="quickbar ornate">
+      <button id="inventoryBtn" title="Inventario">▣<small>Bolsa</small></button>
+      <button id="characterBtn" title="Personaje">♙<small>Héroe</small></button>
+      <button id="questsBtn" title="Misiones">❖<small>Diario</small></button>
+      <button id="mapBtn" title="Mapa">⌖<small>Mapa</small></button>
+      <button id="potionBtn" title="Usar poción">♥<small id="potionQty">× 2</small></button>
+    </div>
+    <div class="help-hint" id="helpHint">WASD mover · Espacio atacar · Q habilidad · E interactuar · Shift esquivar</div>
+  </div>
+
+  <div id="overlay" class="overlay">
+    <section id="mainMenu" class="screen menu-screen">
+      <div class="menu-decoration">✦ ✧ ✦</div>
+      <div class="title-kicker">UN MUNDO POR DESCUBRIR</div>
+      <h1>CRÓNICAS <span>DEL UMBRAL</span></h1>
+      <p class="subtitle">Un RPG de fantasía en pixel art 2.5D</p>
+      <div class="title-divider">◆ ━━━━━ ✦ ━━━━━ ◆</div>
+      <div class="menu-actions">
+        <button id="continueBtn" class="gold-button" disabled>CONTINUAR AVENTURA</button>
+        <button id="newBtn" class="dark-button">NUEVA PARTIDA</button>
+        <button id="loadBtn" class="dark-button">CARGAR PARTIDA</button>
+        <button id="menuSettingsBtn" class="dark-button">CONFIGURACIÓN</button>
+      </div>
+      <div class="edition">VERSIÓN 0.1 · PROTOTIPO JUGABLE · NOMBRE PROVISIONAL</div>
+    </section>
+
+    <section id="creator" class="screen panel-screen hidden">
+      <div class="screen-head"><button id="creatorBack" class="back-button">‹ VOLVER</button><h2>CREAR AVENTURERO</h2><small>Paso 1 de 2</small></div>
+      <div class="creator-layout">
+        <div class="character-preview ornate"><canvas id="previewCanvas" width="192" height="250"></canvas><div class="preview-caption">VISTA PREVIA</div><div class="preview-directions"><button data-dir="front" class="active">Frente</button><button data-dir="left">Perfil</button><button data-dir="back">Espalda</button></div></div>
+        <div class="creator-fields">
+          <label>Nombre <input id="heroName" type="text" maxlength="18" value="Aventurero" autocomplete="off" /></label>
+          <div class="form-row"><label>Personaje <select id="heroGender"><option value="hombre">Hombre</option><option value="mujer">Mujer</option></select></label><label>Peinado <select id="heroHair"></select></label></div>
+          <div class="form-row"><label>Piel <input id="heroSkin" type="color" value="#d7a076" /></label><label>Ojos <input id="heroEyes" type="color" value="#448cbf" /></label><label>Cabello <input id="heroHairColor" type="color" value="#9c693e" /></label><label>Ropa <input id="heroCloth" type="color" value="#445e85" /></label></div>
+          <div class="form-row"><label>Altura <input id="heroHeight" type="range" min="85" max="115" value="100" /></label><label>Contextura <input id="heroBuild" type="range" min="85" max="115" value="100" /></label></div>
+          <div class="form-row"><label>Busto <input id="heroBust" type="range" min="85" max="115" value="100" /></label><label>Proporción extremidades <input id="heroLimbs" type="range" min="85" max="115" value="100" /></label></div>
+          <div class="note">Los ajustes corporales modifican la escala del sprite en esta versión; la deformación de cada pieza de armadura se implementará en fases posteriores.</div>
+        </div>
+      </div>
+      <div class="creator-bottom"><button id="toClassesBtn" class="gold-button">ELEGIR CLASE →</button></div>
+    </section>
+
+    <section id="classScreen" class="screen panel-screen hidden">
+      <div class="screen-head"><button id="classesBack" class="back-button">‹ APARIENCIA</button><h2>ELEGÍ TU DESTINO</h2><small>Paso 2 de 2</small></div>
+      <p class="class-subtitle">13 clases · estilos de combate distintos</p>
+      <div id="classGrid" class="class-grid"></div>
+      <div class="class-detail ornate"><div><strong id="classDetailName">CABALLERO</strong><div id="classDetailDescription">Un defensor equilibrado.</div></div><div id="classDetailStats">❤ 125 · ✦ 40 · ⚔ 14</div></div>
+      <div class="creator-bottom"><button id="beginBtn" class="gold-button">COMENZAR AVENTURA ✦</button></div>
+    </section>
+
+    <section id="introScreen" class="screen intro-screen hidden">
+      <div class="intro-picture" id="introPicture"><div class="intro-moon"></div><div class="intro-sea"></div><div class="intro-island">♜</div></div>
+      <div class="intro-caption"><small>PRÓLOGO</small><h2 id="introTitle">Una tierra desconocida</h2><p id="introBody">El mar se abre ante una isla olvidada por los mapas.</p><button class="gold-button" id="introNext">CONTINUAR →</button><button class="text-button" id="introSkip">Omitir introducción</button></div>
+    </section>
+
+    <section id="modal" class="screen modal-screen hidden">
+      <div class="modal-card ornate"><div class="modal-top"><h2 id="modalTitle">MENÚ</h2><button id="closeModal" class="back-button">✕</button></div><div id="modalContent"></div></div>
+    </section>
+
+    <section id="deathScreen" class="screen death-screen hidden"><div class="death-card ornate"><div class="death-icon">☠</div><h2>HAS CAÍDO</h2><p>La aventura no termina mientras aún quede voluntad.</p><button id="respawnBtn" class="gold-button">REGRESAR A LA ALDEA</button><button id="deathMenuBtn" class="dark-button">MENÚ PRINCIPAL</button></div></section>
+  </div>
+  <div id="loading" class="loading"><div>✦</div><strong>ABRIENDO EL UMBRAL</strong><small>Preparando el mundo...</small></div>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "Crónicas del Umbral — RPG 0.1",
+  "short_name": "Crónicas RPG",
+  "description": "RPG de fantasía 2.5D con bosque, aldeas, combate y el Laberinto de Signar.",
+  "lang": "es-AR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#101824",
+  "theme_color": "#101824",
+  "icons": [
+    {"src":"assets/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"assets/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}
