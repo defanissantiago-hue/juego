@@ -1,6 +1,6 @@
 {
   "name": "cronicas-del-umbral-rpg",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "Prototipo RPG de fantasía 2.5D en Three.js, PWA para iPhone y PC.",

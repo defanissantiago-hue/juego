@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {GameWorld} from '../src/world.js';
-const drawContext={fillRect(){},clearRect(){},drawImage(){},beginPath(){},arc(){},fill(){},stroke(){}};
+const drawContext={fillRect(){},clearRect(){},drawImage(){},beginPath(){},moveTo(){},lineTo(){},closePath(){},arc(){},fill(){},stroke(){}};
 globalThis.document={createElement(tag){assert.equal(tag,'canvas');return{width:0,height:0,getContext(){return drawContext}}}};
 class Vector{set(){return this}lerp(){return this}}
 class Color{set(){return this}}

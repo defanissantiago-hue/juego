@@ -53,7 +53,15 @@ export class GameWorld {
  addTree(x,z,seed,pine=false,autumn=false){this.sprite('tree'+(seed%6)+(pine?'p':'')+(autumn?'a':''),x,z,2.7,3.5,()=>treeArt(seed,pine,autumn));this.addObstacle(x,z,.67)}
  buildSurface(){this.reset();this.region='surface';this.floor=1;this.floorTiles='surface';this.buildGround('surface');const rand=seedRand(58334);
   this.house(-19,-10,'gold','herreria','Herrería de Brann');this.house(-9,-10,'red','armeria','Armería del Alba');this.house(1,-10,'gold','pociones','Casa de Pociones');this.house(-19,7,'red','herboristeria','Herboristería');this.house(-5,14,'gold','magia','Reliquias Arcanas');this.house(5,7,'red',null,'Posada del Ciervo');this.house(-18,-20,'gold',null,'Casa de los Pescadores');
-  this.sprite('anciana',-3,1,1.25,1.72,()=>npcArt('anciana'));this.addInteract('Anciana Elara',-3,1,'elder');this.sprite('guard',8,2,1.25,1.72,()=>npcArt('guard'));this.addInteract('Guardia del puente',8,2,'guard');
+  this.sprite('anciana',-3,1,1.55,1.97,()=>npcArt('anciana'));this.addInteract('Anciana Elara',-3,1,'elder');
+  this.sprite('guard',8,2,1.56,2.03,()=>npcArt('guard'));this.addInteract('Guardia del puente',8,2,'guard');
+  for(const [type,x,z,label,action] of [
+    ['merchant',-14,-5,'Bren el Mercader','merchant'],
+    ['villager',-1,-5,'Habitante de la aldea','villager'],
+    ['explorer',11,8,'Explorador del bosque','explorer'],
+    ['villager',4,13,'Viajera','villager']
+  ]){this.sprite('npc:'+type,x,z,1.48,1.95,()=>npcArt(type));this.addInteract(label,x,z,action)}
+
   for(let i=0;i<155;i++){let x=-33+rand()*66,z=-27+rand()*54;if(x < -28||x>29)continue;let inVillage=x<10;let path=(Math.abs(z-3)<3&&x>-22)||(Math.abs(x+6)<3&&z>-15&&z<18)||(x<8&&x>-24&&Math.abs(z+8)<3)||(Math.abs(x-18)<3&&z<18);let water=(x<-14&&x>-28&&z>9);let houseBox=this.obstacles.some(o=>Math.hypot(o.x-x,o.z-z)<4.1);if(path||water||houseBox||Math.hypot(x+9,z-5)<4)continue;if(inVillage&&rand()>.30)continue;this.addTree(x,z,i,rand()>.67,rand()>.95)}
   for(let i=0;i<95;i++){let x=-32+rand()*64,z=-26+rand()*52;if(this.obstacles.some(o=>Math.hypot(o.x-x,o.z-z)<1.2))continue;if(x<-28&&z>11)continue;this.sprite('bush'+(i%6),x,z,.7+rand()*.4,.5+rand()*.3,()=>bushArt(i%6+1))}
   for(let i=0;i<145;i++){let x=-32+rand()*64,z=-25+rand()*50;if(x<-15&&x>-27&&z>13)continue;this.sprite('plant'+(i%7),x,z,.23+rand()*.16,.28+rand()*.17,()=>plantArt(i%7+1,i%8===0?'grass':'flower'))}

@@ -3,29 +3,7 @@ const c=(w,h)=>{const el=document.createElement('canvas');el.width=w;el.height=h
 const box=(g,x,y,w,h,color)=>{g.fillStyle=color;g.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));};
 const shade=(col,adjust)=>{let n=parseInt((col||'#777777').slice(1),16);let r=Math.max(0,Math.min(255,(n>>16)+adjust)),g=Math.max(0,Math.min(255,((n>>8)&255)+adjust)),b=Math.max(0,Math.min(255,(n&255)+adjust));return `rgb(${r},${g},${b})`;};
 const rng=(seed)=>{let n=seed>>>0;return()=>{n=(n*1664525+1013904223)>>>0;return n/4294967296}};
-export function pixelHero(a,dir='front',step=0){
- const [canvas,g]=c(32,40); const side=dir==='left'||dir==='right',back=dir==='back',shift=step===1?2:step===2?-2:0;
- const skin=a.skin||'#d7a076',hair=a.hairColor||'#9c693e',cloth=a.cloth||'#445e85',dark=shade(cloth,-43),lighter=shade(cloth,35);
- let bw=Math.round(12*(a.build||100)/100);let cx=16-bw/2|0;
- box(g,11,35+Math.max(0,shift),5,3,'#1b1c25');box(g,18,35-Math.min(0,shift),5,3,'#1b1c25');
- box(g,11,28+shift,5,8,'#50412e');box(g,18,28-shift,5,8,'#50412e');box(g,11,35+shift,6,3,'#634c31');box(g,18,35-shift,6,3,'#634c31');
- box(g,cx,18,bw,13,dark);box(g,cx+1,18,bw-2,10,cloth);box(g,cx+2,21,bw-4,2,lighter);
- box(g,cx,28,bw,2,'#806e44');box(g,15,28,3,2,'#e3c37b');
- if(!side){box(g,cx-4,19,4,10,shade(cloth,-35));box(g,cx+bw,19,4,10,shade(cloth,-35));box(g,cx-4,26,4,4,skin);box(g,cx+bw,26,4,4,skin)}
- else{box(g,cx-3,19,5,10,dark);box(g,cx+bw-1,19,4,9,cloth);box(g,cx+bw-1,26,4,3,skin)}
- box(g,9,8,14,12,shade(skin,-27));box(g,10,8,12,11,skin);box(g,10,16,12,3,shade(skin,-9));
- if(!back){if(side){box(g,dir==='right'?19:11,13,2,3,a.eyes||'#448cbf');box(g,dir==='right'?20:10,12,1,2,'#f9eee1')}else{box(g,12,13,2,3,a.eyes||'#448cbf');box(g,19,13,2,3,a.eyes||'#448cbf');box(g,13,12,1,1,'#fff');box(g,20,12,1,1,'#fff')}}
- box(g,9,5,15,6,shade(hair,-40));box(g,10,4,13,6,hair);box(g,8,8,3,6,hair);box(g,22,8,3,5,hair);if(back)box(g,10,10,13,10,hair);
- const style=Number(a.hair||0);
- if(style===1||style===2||style===9){box(g,7,9,3,14,hair);box(g,23,9,3,14,shade(hair,-15));}
- if(style===3){box(g,10,5,12,3,shade(hair,-10));box(g,8,8,2,3,hair)}
- if(style===4||style===8){box(g,9,3,3,5,hair);box(g,16,1,4,6,hair);box(g,23,4,3,6,shade(hair,-20))}
- if(style===5||style===6){box(g,14,2,6,4,shade(hair,-10));if(back)box(g,18,12,5,10,hair)}
- if(style===7){box(g,10,9,8,4,shade(hair,-25));box(g,18,8,5,4,hair)}
- box(g,11,5,4,2,shade(hair,28));
- if(a.gender==='mujer'){box(g,cx+1,22,bw-2,1,lighter);if(style===0){box(g,8,10,2,9,hair);box(g,23,10,2,9,hair)}}
- return canvas;
-}
+export {pixelHero,npcArt} from './character-art.js';
 export function textureTile(type,seed=0){const [canvas,g]=c(24,24);const random=rng(seed*71+1234);
  let base={grass:'#528b57',grass2:'#4f8b51',darkgrass:'#315e4b',forest:'#335e45',path:'#b2a476',cobble:'#81796d',water:'#398d9d',dirt:'#786648',dungeon:'#444b50',wall:'#60605e',bridge:'#8a603b'}[type]||'#5f8f56';box(g,0,0,24,24,base);
  if(type==='water'){for(let i=0;i<9;i++){let x=random()*24,y=random()*24;box(g,x,y,4+random()*4,1,random()>.5?'#5cb9b8':'#276c8f')}return canvas}
@@ -52,4 +30,3 @@ export function creatureArt(type,frame=0){const boss=type==='signar',size=boss?5
  else if(boss){r(15,35,12,15,'#4c525a');r(29,35,12,15,'#4c525a');r(10,15,34,25,'#414b52');r(8,14,38,7,'#9da3a1');r(13,9,28,18,'#b38a65');r(17,0,19,11,'#7c8384');r(11,8,33,4,'#c3a566');r(13,24,29,12,'#b97b3e');r(18,25,7,4,'#ebcc7c');r(29,25,7,4,'#ebcc7c');r(18,15,4,4,'#e7775c');r(32,15,4,4,'#e7775c');r(3,24,9,18,'#909b9f');r(42,21,8,16,'#909b9f');r(44,4,3,41,'#96754b');r(38,2,14,8,'#b0bcc0');r(40,3,8,3,'#e2e5ce')}
  return canvas;
 }
-export function npcArt(kind){const appearances={anciana:{skin:'#c9a08b',hairColor:'#c9b9a0',cloth:'#806486',hair:5,gender:'mujer'},guard:{skin:'#d2ac82',hairColor:'#403425',cloth:'#596b88',hair:3,gender:'hombre'},merchant:{skin:'#c89b76',hairColor:'#794331',cloth:'#b18442',hair:2,gender:'hombre'},other:{skin:'#d4af85',hairColor:'#58432b',cloth:'#879260',hair:4,gender:'hombre'}};return pixelHero(appearances[kind]||appearances.other,'front',0)}
