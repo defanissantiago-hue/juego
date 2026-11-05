@@ -16,6 +16,7 @@ if (!THREE) {
 }
 
 import {CLASSES,HAIRS,ITEMS,SHOPS,startingHero,initialAppearance,ENEMIES} from './data.js';
+import {normalizeSavedHero} from './save-schema.js';
 import {pixelHero} from './art.js';
 import {GameWorld} from './world.js';
 const $=id=>document.getElementById(id);
@@ -29,7 +30,7 @@ const world=new GameWorld(THREE,scene);
 const state={mode:'menu',modal:null,hero:null,slot:1,preview:initialAppearance(),previewDir:'front',selectedClass:'caballero',introIndex:0,player:null,heroTextures:{},moved:0,step:0,lastTimestamp:0,saveTimer:0,uiTimer:0,nightSpawned:false,toastTimer:0,skillCooldown:0,attackCooldown:0,dodgeTime:0,guardTime:0,summonTime:0,screenShake:0,quality:'medio',audio:true,audioContext:null,keyboard:new Set(),joy:{x:0,y:0,pointer:null},pressed:new Set(),pendingFight:false};
 const phases=[{title:'La llegada',body:'El mar se abre ante una isla olvidada por los mapas. Una embarcación solitaria llega a sus costas.'},{title:'La Aldea del Alba',body:'En un rincón protegido por árboles antiguos, los habitantes guardan secretos sobre cuevas y minerales desaparecidos.'},{title:'Un destino incierto',body:'No heredaste una leyenda. Vas a escribirla. Elegí tus batallas, seguí las pistas y sobreviví a la noche.'}];
 const slotKey=n=>'cronicas-umbral-v01-slot-'+n;
-function getSave(n){try{const value=JSON.parse(localStorage.getItem(slotKey(n)));return value?.appearance&&value?.classId?value:null}catch{return null}}
+function getSave(n){try{return normalizeSavedHero(JSON.parse(localStorage.getItem(slotKey(n))))}catch{return null}}
 function save(silent=false){if(!state.hero)return;state.hero.lastSave=Date.now();try{localStorage.setItem(slotKey(state.slot),JSON.stringify(state.hero));if(!silent)toast('Partida guardada en este dispositivo ✦')}catch(e){toast('No se pudo guardar: revisá el almacenamiento');console.warn(e)}}
 function sound(freq=480,duration=.10,wave='sine',volume=.035){if(!state.audio)return;try{const AC=window.AudioContext||window.webkitAudioContext;if(!state.audioContext)state.audioContext=new AC();const a=state.audioContext;if(a.state==='suspended')a.resume();const o=a.createOscillator(),g=a.createGain();o.type=wave;o.frequency.setValueAtTime(freq,a.currentTime);o.frequency.exponentialRampToValueAtTime(Math.max(40,freq*.7),a.currentTime+duration);g.gain.setValueAtTime(volume,a.currentTime);g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+duration);o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+duration+.01)}catch{}}
 function toast(message,time=2200){$('toast').textContent=message;$('toast').classList.add('show');clearTimeout(state.toastTimer);state.toastTimer=setTimeout(()=>$('toast').classList.remove('show'),time)}
