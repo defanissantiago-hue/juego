@@ -7,7 +7,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "dev": "python3 -m http.server 8080",
-    "test": "node tests/smoke.mjs && node tests/world.mjs"
+    "test": "node tests/smoke.mjs && node tests/world.mjs && node tests/save.mjs"
   },
   "dependencies": {
     "three": "0.181.0"
