@@ -1,0 +1,28 @@
+name: RPG — QA sin despliegue
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar Three.js
+        run: npm install --no-audit --no-fund
+      - name: Probar 13 clases, mundo, Signar y guardados
+        run: npm test
+      - name: Compilar version web
+        run: npm run build
+      - name: Verificar Three local en salida
+        run: |
+          test -s www/vendor/three.module.js
+          test -s www/vendor/three.core.js
+          grep -q '../vendor/three.module.js' www/src/main.js
+          test -s www/src/save-schema.js
